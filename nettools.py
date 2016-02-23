@@ -50,7 +50,7 @@ def header():
 
 	print Style.RESET_ALL + '''\
  Author: Francesco Ficarola
- GitHub: https://
+ GitHub: https://github.com/francesco-ficarola/nettools
  ------------------------------------------------------------
 	'''
 
