@@ -1,0 +1,1 @@
+python C:\Python27\Scripts\cxfreeze ..\nettools.py --icon net.ico
