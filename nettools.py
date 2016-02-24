@@ -12,7 +12,8 @@ from netaddr import IPNetwork, IPAddress
 
 NET_REGEX = '^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-5][0-5])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-5][0-5])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-5][0-5])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-5][0-5])\/([0-9]|[1-2][0-9]|3[0-2])$'
 IP_REGEX = '^([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-5][0-5])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-5][0-5])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-5][0-5])\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-5][0-5])$'
-PORTS_REGEX = '^(\d{1,5}(\s*,\s*\d{1,5})*)?$'
+PORTS_REGEX = '^\d{1,5}(?:-\d{1,5})?(\s*,\s*\d{1,5}(?:-\d{1,5})?)*$'
+PORTS_RANGE_REGEX = '^\d{1,5}-\d{1,5}$'
 
 # Menu items
 LOCAL = '1'
@@ -31,7 +32,7 @@ OPTIONS = OrderedDict([
 	(INFO			,	' DNS lookup'),
 	(NET			,	' Get information about a network'),
 	(PING			,	' Check if you can reach an IPv4'),
-	(PORT			,	' Perform a port scan on an IPv4'),
+	(PORT			,	' Check ports status on an IPv4'),
 	(ARP			,	' Check ARP cache'),
 	(TRACE			,	' Perform a trace route'),
 	(EXIT			,	' Exit')
@@ -295,28 +296,53 @@ def checkPorts():
 			ip = IPAddress(ipstr)
 			right_choice_ports = False
 			portstr = raw_input('\n' + Style.BRIGHT + Fore.GREEN  + ' [*] Enter ports in CSV format (e.g., 53,80,8080) or \'*\' for a full scan:' + Style.RESET_ALL + ' ')
-
-			z = re.compile(PORTS_REGEX)
-			while right_choice_ports == False:
-				if z.match(portstr):
-					ports = [int(port.strip()) for port in portstr.split(',')]
-					if len(set(ports)) != len(ports):
-						ports = list(set(ports))
-					if all(i > 0 and i < 65536 for i in ports):
+			try:
+				z = re.compile(PORTS_REGEX)
+				while right_choice_ports == False:
+					if z.match(portstr):
+						ports = []
+						parseports = [port.strip() for port in portstr.split(',')]
+						k = re.compile(PORTS_RANGE_REGEX)
+						for parseport in parseports:
+							# Ports range
+							if k.match(parseport):
+								(minport, maxport) = parseport.split('-')
+								if int(minport) > int(maxport):
+									print Style.RESET_ALL
+									print '\n' + Style.BRIGHT + Fore.RED +  ' Ports range ' + minport + '-' + maxport + ' is not valid.'
+									print Style.RESET_ALL
+								else:
+									for port in range(int(minport), int(maxport)+1):
+										ports.append(port)
+							# Single port
+							else:
+								ports.append(int(parseport))
+						
+						if len(set(ports)) != len(ports):
+							ports = list(set(ports))
+						
+						if all(i > 0 and i < 65536 for i in ports):
+							ports.sort()
+							ipPorts(str(ip), ports, export)
+							right_choice_ports = True
+						else:
+							print Style.RESET_ALL
+							print '\n' + Style.BRIGHT + Fore.RED +  ' ERROR: all ports must be in range 1-65535!'
+							print Style.RESET_ALL
+							portstr = raw_input('\n' + Style.BRIGHT + Fore.GREEN  + ' [*] Please, enter ports in CSV format (e.g., 53,80,8080) or \'*\' for a full scan:' + Style.RESET_ALL + ' ')
+					elif portstr == '*':
+						ports = range(1, 65536)
 						ipPorts(str(ip), ports, export)
 						right_choice_ports = True
 					else:
-						print Style.RESET_ALL
-						print '\n' + Style.BRIGHT + Fore.RED +  ' ERROR: all ports must be in range 1-65535!'
-						print Style.RESET_ALL
 						portstr = raw_input('\n' + Style.BRIGHT + Fore.GREEN  + ' [*] Please, enter ports in CSV format (e.g., 53,80,8080) or \'*\' for a full scan:' + Style.RESET_ALL + ' ')
-				elif portstr == '*':
-					ports = range(1, 65536)
-					ipPorts(str(ip), ports, export)
-					right_choice_ports = True
-				else:
-					portstr = raw_input('\n' + Style.BRIGHT + Fore.GREEN  + ' [*] Please, enter ports in CSV format (e.g., 53,80,8080) or \'*\' for a full scan:' + Style.RESET_ALL + ' ')
-			
+
+			except:
+				print Style.RESET_ALL
+				print '\n' + Style.BRIGHT + Fore.RED +  ' Manual break or fatal error!'
+				print Style.NORMAL + Fore.RED + ' Please report this issue on GitHub if you think it is a bug.'
+				print Style.RESET_ALL
+				print '\n ------------------------------------------------------------\n\n'
 			right_choice_ip = True
 		elif ipstr == BACK:
 			right_choice_ip = True
