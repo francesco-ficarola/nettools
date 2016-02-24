@@ -72,20 +72,20 @@ def menu():
 	for item in OPTIONS:
 		print ' ' + Style.BRIGHT + Fore.YELLOW + item + ') ' + OPTIONS[item] + '\n'
 	print ' ' + Style.BRIGHT + Fore.BLUE + '[' + BACK + '] ' +  'Go back to this menu\n' 
-	item = raw_input('\n' + Style.BRIGHT + Fore.CYAN  + ' [*] Please enter a valid option:' + Style.RESET_ALL + ' ')
+	item = raw_input('\n' + Style.BRIGHT + Fore.GREEN  + ' [*] Please enter a valid option:' + Style.RESET_ALL + ' ')
 	return item
 
 
 def localInfo():
-	print Style.BRIGHT + Back.MAGENTA + Fore.WHITE
+	print Style.BRIGHT + Fore.WHITE
 	print '------------------------------------------------------------'
 	os.system('ipconfig' if  platform.system().lower() == 'windows' else 'ifconfig')
 	print '------------------------------------------------------------' + Style.RESET_ALL
-	print Style.BRIGHT + Back.BLUE + Fore.WHITE
+	print Style.BRIGHT + Fore.CYAN
 	print '\n Hostname: ' + socket.gethostname()
-	print([(s.connect(('8.8.8.8', 53)), ' IP --> Internet: ' + s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1])
+	print([(s.connect(('8.8.8.8', 53)), ' IP LAN --> Internet: ' + s.getsockname()[0], s.close()) for s in [socket.socket(socket.AF_INET, socket.SOCK_DGRAM)]][0][1])
 	print Style.RESET_ALL
-	raw_input('\n' + Style.BRIGHT + Fore.BLUE  + ' Press Enter to continue...')
+	raw_input('\n' + Style.BRIGHT + Fore.BLUE + ' Press Enter to continue...')
 	print Style.RESET_ALL
 	print '\n ------------------------------------------------------------\n\n'
 
@@ -99,12 +99,12 @@ def ipInfo():
 		if p.match(ipstr):
 			try:
 				ip = IPAddress(ipstr)
-				print Style.BRIGHT + Back.BLUE + Fore.WHITE
+				print Style.BRIGHT + Fore.CYAN
 				print '\n IP: ' + str(ip)
 				print ' Hostname: ' + str(socket.gethostbyaddr(str(ip))[0])
 				print Style.RESET_ALL
 				
-				raw_input('\n' + Style.BRIGHT + Fore.BLUE  + ' Press Enter to continue...')
+				raw_input('\n' + Style.BRIGHT + Fore.BLUE + ' Press Enter to continue...')
 				print Style.RESET_ALL
 				print '\n ------------------------------------------------------------\n\n'
 			except socket.herror:
@@ -121,12 +121,12 @@ def ipInfo():
 			right_choice = True
 		elif isValidHostname(ipstr):
 			try:
-				print Style.BRIGHT + Back.BLUE + Fore.WHITE
+				print Style.BRIGHT + Fore.CYAN
 				print '\n Hostname: ' + ipstr
 				print ' IP: ' + str(socket.gethostbyname(ipstr))
 				print Style.RESET_ALL
 				
-				raw_input('\n' + Style.BRIGHT + Fore.BLUE  + ' Press Enter to continue...')
+				raw_input('\n' + Style.BRIGHT + Fore.BLUE + ' Press Enter to continue...')
 				print Style.RESET_ALL
 				print '\n ------------------------------------------------------------\n\n'
 			except socket.gaierror:
@@ -164,7 +164,7 @@ def netInfo():
 				bcast = ipcidr.broadcast
 				hmask = ipcidr.hostmask
 				num_hosts = (ipcidr.size - 2) if (ipcidr.size - 2) > 0 else 0
-				print Style.BRIGHT + Back.BLUE + Fore.WHITE
+				print Style.BRIGHT + Fore.CYAN
 				print '\n IP: ' + str(ip)
 				print ' Bits: ' + str(bits)
 				print ''
@@ -176,7 +176,7 @@ def netInfo():
 				print ' Number of available hosts: ' + str(num_hosts)
 				print Style.RESET_ALL
 				
-				raw_input('\n' + Style.BRIGHT + Fore.BLUE  + ' Press Enter to continue...')
+				raw_input('\n' + Style.BRIGHT + Fore.BLUE + ' Press Enter to continue...')
 				print Style.RESET_ALL
 				print '\n ------------------------------------------------------------\n\n'
 			except:
@@ -194,7 +194,7 @@ def netInfo():
 
 
 def ping(host):
-	print Style.BRIGHT + Back.MAGENTA + Fore.WHITE
+	print Style.BRIGHT + Fore.WHITE
 	print '------------------------------------------------------------'
 	ping_str = '-n 1' if  platform.system().lower() == 'windows' else '-c 1'
 	result = os.system('ping ' + ping_str + ' ' + host) == 0
@@ -212,14 +212,14 @@ def pingIP():
 			try:
 				ip = IPAddress(ipstr)
 				reachable = ping(str(ip))
-				print Style.BRIGHT + Back.BLUE + Fore.WHITE
+				print Style.BRIGHT + Fore.CYAN
 				if reachable:
 					print '\n IP ' + str(ip) + ' is reachable from your machine!'
 				else:
 					print '\n IP ' + str(ip) + ' is NOT reachable from your machine!'
 				print Style.RESET_ALL
 				
-				raw_input('\n' + Style.BRIGHT + Fore.BLUE  + ' Press Enter to continue...')
+				raw_input('\n' + Style.BRIGHT + Fore.BLUE + ' Press Enter to continue...')
 				print Style.RESET_ALL
 				print '\n ------------------------------------------------------------\n\n'
 			except:
@@ -239,7 +239,7 @@ def pingIP():
 def ipPorts(ip, ports, export):
 	opened = []
 	closed = []
-	print Style.BRIGHT + Back.MAGENTA + Fore.WHITE
+	print Style.BRIGHT + Fore.WHITE
 	print '------------------------------------------------------------'
 	sys.stdout.write('Scanning... ')
 	for index, port in enumerate(ports):
@@ -260,7 +260,7 @@ def ipPorts(ip, ports, export):
 		else:
 			sys.stdout.write(str(port) + ' (' + status + ')\n')
 	print '------------------------------------------------------------' + Style.RESET_ALL
-	print Style.BRIGHT + Back.BLUE + Fore.WHITE
+	print Style.BRIGHT + Fore.CYAN
 	print '\n Open ports: ' + str(opened)
 	print '\n Closed ports: ' + str(closed)
 	if export:
@@ -276,7 +276,7 @@ def ipPorts(ip, ports, export):
 			print '\n' + Style.BRIGHT + Fore.RED +  ' ERROR: could not create the file!'
 			print Style.RESET_ALL
 	print Style.RESET_ALL
-	raw_input('\n' + Style.BRIGHT + Fore.BLUE  + ' Press Enter to continue...')
+	raw_input('\n' + Style.BRIGHT + Fore.BLUE + ' Press Enter to continue...')
 	print Style.RESET_ALL
 	print '\n ------------------------------------------------------------\n\n'
 
@@ -352,20 +352,20 @@ def checkPorts():
 
 
 def checkARP():
-	print Style.BRIGHT + Back.MAGENTA + Fore.WHITE
+	print Style.BRIGHT + Fore.WHITE
 	print '------------------------------------------------------------'
 	
 	os.system('arp -a')
 
 	print '------------------------------------------------------------' + Style.RESET_ALL
 
-	raw_input('\n' + Style.BRIGHT + Fore.BLUE  + ' Press Enter to continue...')
+	raw_input('\n' + Style.BRIGHT + Fore.BLUE + ' Press Enter to continue...')
 	print Style.RESET_ALL
 	print '\n ------------------------------------------------------------\n\n'
 
 
 def trace(host):
-	print Style.BRIGHT + Back.MAGENTA + Fore.WHITE
+	print Style.BRIGHT + Fore.WHITE
 	print '------------------------------------------------------------'
 	trace_str = 'tracert' if  platform.system().lower() == 'windows' else 'tracepath'
 	os.system(trace_str + ' ' + host) == 0
@@ -382,7 +382,7 @@ def traceIP():
 			try:
 				ip = IPAddress(ipstr)
 				trace(str(ip))				
-				raw_input('\n' + Style.BRIGHT + Fore.BLUE  + ' Press Enter to continue...')
+				raw_input('\n' + Style.BRIGHT + Fore.BLUE + ' Press Enter to continue...')
 				print Style.RESET_ALL
 				print '\n ------------------------------------------------------------\n\n'
 			except:
